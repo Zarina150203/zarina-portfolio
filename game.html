@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Korean Vocabulary Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fa;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #333;
+    }
+    #question {
+      font-size: 1.5em;
+      margin: 20px 0;
+    }
+    .option {
+      display: block;
+      background: white;
+      margin: 10px auto;
+      padding: 12px;
+      width: 200px;
+      border-radius: 8px;
+      border: 2px solid #444;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .option:hover {
+      background: #ddd;
+    }
+    #feedback {
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    #score {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      background: #444;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Korean Vocabulary Quiz</h1>
+  <p><strong>How to Play:</strong><br>
+     You will see a Korean word.<br>
+     Choose the correct English meaning from the options.<br>
+     Your score will be shown at the end.</p>
+
+  <div id="quiz">
+    <div id="question">Click "Start Game" to begin!</div>
+    <div id="options"></div>
+    <div id="feedback"></div>
+    <div id="score"></div>
+    <button id="startBtn">Start Game</button>
+  </div>
+
+  <script>
+    const wordBank = {
+      "사람": "person",
+      "책": "book",
+      "학교": "school",
+      "물": "water",
+      "친구": "friend",
+      "의자": "chair",
+      "사과": "apple",
+      "시간": "time",
+      "음식": "food",
+      "집": "house"
+    };
+
+    let score = 0;
+    let round = 0;
+    const totalRounds = 5;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const feedbackEl = document.getElementById("feedback");
+    const scoreEl = document.getElementById("score");
+    const startBtn = document.getElementById("startBtn");
+
+    function startGame() {
+      score = 0;
+      round = 0;
+      scoreEl.textContent = "";
+      feedbackEl.textContent = "";
+      startBtn.style.display = "none";
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      if (round >= totalRounds) {
+        endGame();
+        return;
+      }
+
+      round++;
+      optionsEl.innerHTML = "";
+      feedbackEl.textContent = "";
+
+      const words = Object.keys(wordBank);
+      const koreanWord = words[Math.floor(Math.random() * words.length)];
+      const correctAnswer = wordBank[koreanWord];
+
+      questionEl.textContent = `Round ${round}: What does "${koreanWord}" mean?`;
+
+      // Generate options
+      let options = [correctAnswer];
+      while (options.length < 4) {
+        const randomMeaning = wordBank[words[Math.floor(Math.random() * words.length)]];
+        if (!options.includes(randomMeaning)) {
+          options.push(randomMeaning);
+        }
+      }
+      options = options.sort(() => Math.random() - 0.5);
+
+      // Display options
+      options.forEach(option => {
+        const btn = document.createElement("div");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.onclick = () => checkAnswer(option, correctAnswer);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected, correct) {
+      if (selected === correct) {
+        feedbackEl.textContent = "✅ Correct!";
+        score++;
+      } else {
+        feedbackEl.textContent = `❌ Wrong! The correct answer was "${correct}".`;
+      }
+      setTimeout(nextQuestion, 1000); // wait 1 second before next question
+    }
+
+    function endGame() {
+      questionEl.textContent = "Game Over!";
+      optionsEl.innerHTML = "";
+      feedbackEl.textContent = "";
+      scoreEl.textContent = `Your score: ${score} / ${totalRounds}`;
+      startBtn.textContent = "Play Again";
+      startBtn.style.display = "inline-block";
+    }
+
+    startBtn.onclick = startGame;
+  </script>
+</body>
+</html>
